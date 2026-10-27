@@ -89,7 +89,7 @@ app.get('/forgejo/:uuid', showWebhookInfo);
 
 discordBot.start(process.env.DISCORD_TOKEN);
 
-checkForUpdates();
+void checkForUpdates();
 startDailyVersionCheck();
 
 process.on('SIGINT', () => {
