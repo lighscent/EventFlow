@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require('discord.js');
+const log = require('../utils/logger');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -61,7 +62,7 @@ module.exports = {
                 flags: MessageFlags.Ephemeral
             });
         } catch (error) {
-            console.error(error);
+            log.error(error);
             await interaction.reply({ content: "Error while creating the webhook.", flags: MessageFlags.Ephemeral });
         }
     }

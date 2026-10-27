@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { Client, GatewayIntentBits, REST, Routes, Events, MessageFlags } = require('discord.js');
+const log = require('./logger');
 
 class DiscordBot {
     constructor(db, port, app) {
@@ -39,7 +40,7 @@ class DiscordBot {
                 try {
                     await command.autocomplete(interaction, this.db);
                 } catch (error) {
-                    console.error(error);
+                    log.error(error);
                 }
                 return;
             }
@@ -59,26 +60,26 @@ class DiscordBot {
             try {
                 await command.execute(interaction, this.db, this.port);
             } catch (error) {
-                console.error(error);
+                log.error(error);
                 await interaction.reply({ content: 'Error executing the command.', flags: MessageFlags.Ephemeral });
             }
         });
 
         this.client.once(Events.ClientReady, async () => {
-            console.log(`Bot ready: ${this.client.user.tag}`);
+            log.info(`Bot ready: ${this.client.user.tag}`);
 
             const commandData = Array.from(this.commands.values()).map(cmd => cmd.data.toJSON());
             const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
             try {
                 await rest.put(Routes.applicationCommands(this.client.user.id), { body: commandData });
-                console.log('Slash commands deployed.');
+                log.info('Slash commands deployed.');
             } catch (error) {
-                console.error(error);
+                log.error(error);
             }
 
             this.app.listen(this.port, () => {
-                console.log(`Server ready on port ${this.port}`);
+                log.info(`Server ready on port ${this.port}`);
             });
         });
     }

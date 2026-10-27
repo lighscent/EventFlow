@@ -89,6 +89,7 @@ app.get('/forgejo/:uuid', showWebhookInfo);
 discordBot.start(process.env.DISCORD_TOKEN);
 
 process.on('SIGINT', () => {
+    require('./utils/logger').close();
     db.close();
     discordBot.client.destroy();
     process.exit(0);
