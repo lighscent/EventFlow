@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const DatabaseManager = require('./db/database');
 const WebhookHandler = require('./utils/webhook/index');
 const { createDiscordBot } = require('./utils/discord');
+const { checkForUpdates, startDailyVersionCheck } = require('./utils/version-check');
 const settings = require('./settings.json');
 
 const app = express();
@@ -87,6 +88,9 @@ app.get('/github/:uuid', showWebhookInfo);
 app.get('/forgejo/:uuid', showWebhookInfo);
 
 discordBot.start(process.env.DISCORD_TOKEN);
+
+checkForUpdates();
+startDailyVersionCheck();
 
 process.on('SIGINT', () => {
     require('./utils/logger').close();

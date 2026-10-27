@@ -34,7 +34,6 @@ module.exports = {
     async execute(interaction, db) {
         const name = interaction.options.getString('webhook_name');
 
-        // Find by name instead of partial UUID
         const rows = db.getAllWebhooks()
             .filter(row => interaction.guild.channels.cache.has(row.channelId));
         const webhook = rows.find(r => r.name.toLowerCase() === name.toLowerCase());
@@ -43,7 +42,6 @@ module.exports = {
             return await interaction.reply({ content: `No webhook found with the name: **${name}**`, flags: MessageFlags.Ephemeral });
         }
 
-        // Confirmation buttons
         const confirm = new ButtonBuilder()
             .setCustomId('confirm_delete')
             .setLabel('Confirm')
@@ -63,7 +61,6 @@ module.exports = {
             withResponse: true
         });
 
-        // Collector for the buttons
         const collector = response.resource.message.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 30000
