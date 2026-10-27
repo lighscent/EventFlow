@@ -6,7 +6,7 @@ log.settings({
   console: { enableTimestamp: true, timestampFormat: 'YYYY-MM-DD HH:mm:ss' },
   files: {
     folder: path.join(__dirname, '..', 'logs'),
-    prefix: 'githook',
+    prefix: 'EventFlow',
     maxFile: '14d',
     maxSize: '20m',
     runNumber: true,

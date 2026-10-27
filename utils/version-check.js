@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const log = require('./logger');
 
-const REPO = 'lighscent/githook';
+const REPO = 'lighscent/EventFlow';
 const { version: current } = require('../package.json');
 
 const normalize = v => String(v || '').trim().replace(/^v/i, '');
@@ -19,7 +19,7 @@ const compare = (a, b) => {
 async function checkForUpdates() {
     try {
         const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
-            headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'githook' },
+            headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'eventflow' },
             signal: AbortSignal.timeout(5000)
         });
         if (!res.ok) {

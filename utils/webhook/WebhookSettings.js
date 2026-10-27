@@ -36,7 +36,7 @@ class WebhookSettings {
             case 'embed':
                 return {
                     embedColor: '7289DA',
-                    footerText: 'Open-Source Project | github.com/lighscent/githook'
+                    footerText: 'Open-Source Project | github.com/lighscent/EventFlow'
                 }[key];
             case 'author':
                 return {

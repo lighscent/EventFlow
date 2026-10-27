@@ -1,8 +1,8 @@
-# GitHook
+# EventFlow
 
 A lightweight, simple Discord bot to receive GitHub and Forgejo repository events via webhooks and post them in your Discord channels.
 
-![Release](https://img.shields.io/github/v/release/lighscent/githook?label=Release&style=flat-square)
+![Release](https://img.shields.io/github/v/release/lighscent/eventflow?label=Release&style=flat-square)
 ![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white&label=Platform&style=flat-square)
 ![Forgejo](https://img.shields.io/badge/Forgejo-FC660D?logo=forgejo&logoColor=white&label=Platform&style=flat-square)
 
@@ -24,8 +24,8 @@ All commands require the `AUTHORIZED_ID` permissions defined in your `.env` file
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/lighscent/githook.git
-   cd githook
+   git clone https://github.com/lighscent/EventFlow.git
+   cd EventFlow
    ```
 
 2. **Install dependencies:**
