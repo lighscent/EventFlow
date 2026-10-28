@@ -61,7 +61,12 @@ class DiscordBot {
                 await command.execute(interaction, this.db, this.port);
             } catch (error) {
                 log.error(error);
-                await interaction.reply({ content: 'Error executing the command.', flags: MessageFlags.Ephemeral });
+                const payload = { content: 'Error executing the command.', flags: MessageFlags.Ephemeral };
+                if (interaction.replied || interaction.deferred) {
+                    await interaction.editReply(payload).catch(() => {});
+                } else {
+                    await interaction.reply(payload).catch(() => {});
+                }
             }
         });
 

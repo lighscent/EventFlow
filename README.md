@@ -16,9 +16,9 @@ A lightweight, simple Discord bot to receive GitHub and Forgejo repository event
 
 ## Commands
 All commands require the `AUTHORIZED_ID` permissions defined in your `.env` file.
-- `/create-webhook [name] [platform] [channel] [comment]`: Create a new webhook. `platform` (GitHub/Forgejo) and `channel` are required; `comment` is optional. The reply is an embed with the webhook URL hidden in a spoiler.
-- `/list-webhooks`: Show all active webhooks (scoped to the current server) in a paginated embed, with delete buttons per webhook.
-- `/delete-webhook [name]`: Remove a webhook. The name field has autocomplete (scoped to the current server) showing each webhook's platform and last push date.
+- `/webhook create [name] [platform] [channel] [comment]`: Create a new webhook. `platform` (GitHub/Forgejo) and `channel` are required; `comment` is optional. The reply is an embed with the webhook URL hidden in a spoiler.
+- `/webhook list`: Show all active webhooks (scoped to the current server) in a paginated embed, with delete buttons per webhook.
+- `/webhook delete [name]`: Remove a webhook. The name field has autocomplete (scoped to the current server) showing each webhook's platform and last push date.
 
 ## Installation
 
@@ -87,7 +87,7 @@ The bot's behavior can be customized using the `settings.json` file. This file a
   - `authorUsePusher`: Use pusher instead of author for commits.
 
 ## GitHub Setup
-Once you've created a webhook via Discord using `/create-webhook` (platform: **GitHub**), you'll receive an embed with a spoiler URL (`/github/<uuid>`).
+Once you've created a webhook via Discord using `/webhook create` (platform: **GitHub**), you'll receive an embed with a spoiler URL (`/github/<uuid>`).
 1. Go to your GitHub repository -> Settings -> Webhooks.
 2. Click "Add webhook".
 3. **Payload URL:** Paste the URL provided by the bot.
@@ -98,7 +98,7 @@ Once you've created a webhook via Discord using `/create-webhook` (platform: **G
 Opening a webhook URL in a browser shows a page with non-sensitive info (name, platform, comment, trigger count, last push).
 
 ## Forgejo Setup
-Once you've created a webhook via Discord using `/create-webhook` (platform: **Forgejo**), you'll receive an embed with a spoiler URL (`/forgejo/<uuid>`).
+Once you've created a webhook via Discord using `/webhook create` (platform: **Forgejo**), you'll receive an embed with a spoiler URL (`/forgejo/<uuid>`).
 1. Go to your Forgejo repository -> Settings -> Webhooks.
 2. Click "Add Webhook" and select "Forgejo".
 3. **Target URL:** Paste the URL provided by the bot.
