@@ -11,10 +11,9 @@ class WebhookEmbedBuilder {
         const embed = new EmbedBuilder()
             .setColor(this.settings.getEmbedColor());
 
-        // Footer and timestamp share Discord's bottom line: hidden together.
         if (!opts.hideFooter) {
             embed
-                .setFooter({ text: this.settings.getEmbed('footerText') })
+                .setFooter({ text: this.settings.getEmbed('footer') })
                 .setTimestamp(timestamp ? new Date(timestamp) : new Date());
         }
 
@@ -30,13 +29,13 @@ class WebhookEmbedBuilder {
             embed.setURL(url);
         }
 
-        const authorName = this.settings.getAuthor('authorUsePusher')
+        const authorName = this.settings.getAuthor('usePusher')
             ? (this.payload.pusher?.name || this.payload.pusher?.username || this.payload.pusher?.login)
             : (this.payload.sender?.login || this.payload.pusher?.username || this.payload.pusher?.name);
-        const authorUrl = this.settings.getAuthor('useAuthorUrl')
+        const authorUrl = this.settings.getAuthor('useUrl')
             ? (this.payload.sender?.html_url || this.payload.pusher?.html_url)
             : undefined;
-        const authorIcon = this.settings.getAuthor('showAuthorIcon')
+        const authorIcon = this.settings.getAuthor('showIcon')
             ? (this.payload.sender?.avatar_url || this.payload.pusher?.avatar_url)
             : undefined;
 

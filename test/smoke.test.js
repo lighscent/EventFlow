@@ -5,7 +5,7 @@ const path = require('node:path');
 
 const DatabaseManager = require('../db/database');
 const WebhookHandler = require('../utils/webhook/index');
-const settings = require('../settings.json');
+const settings = require('../utils/settings');
 
 const fakePayload = () => ({
     ref: 'refs/heads/main',
@@ -27,8 +27,9 @@ const fakePayload = () => ({
 
 const fakeClient = (sent) => ({ channels: { cache: new Map([['chan1', { send: async (m) => { sent.push(m); } }]]) } });
 
-const testSettings = (behavior = {}) => ({
+const testSettings = (behavior = {}, display = {}) => ({
     ...settings,
+    display: { ...settings.display, ...display },
     behavior: {
         oneCommitPerMessage: true,
         showFileNames: false,
@@ -349,6 +350,72 @@ describe('webhook handler', () => {
     it('signature check passes without secret', () => {
         const handler = new WebhookHandler({}, {}, settings);
         assert.equal(handler.verifySignature({ headers: {} }, 'github'), true);
+    });
+});
+
+describe('settings', () => {
+    const WebhookSettings = require('../utils/webhook/WebhookSettings');
+
+    it('falls back to defaults when empty', () => {
+        const s = new WebhookSettings({});
+        assert.equal(s.getLimit('maxCommitsPerEmbed'), 5);
+        assert.equal(s.getBehavior('showCommitUrls'), true);
+        assert.equal(s.getDisplay('separator'), '\n\n');
+        assert.equal(s.getEmbed('color'), '7289DA');
+        assert.equal(s.getAuthor('usePusher'), true);
+    });
+
+    it('coerces numeric limits and rejects invalid values', () => {
+        const s = new WebhookSettings({ limits: { maxCommitsPerEmbed: '3', maxEmbedsPerPush: 0, maxFilesPerCommit: 'abc' } });
+        assert.equal(s.getLimit('maxCommitsPerEmbed'), 3);
+        assert.equal(s.getLimit('maxEmbedsPerPush'), 20);
+        assert.equal(s.getLimit('maxFilesPerCommit'), 10);
+    });
+
+    it('rejects bad colors and non-boolean flags', () => {
+        const s = new WebhookSettings({ embed: { color: 'zzz' }, behavior: { showCommitUrls: 'yes' } });
+        assert.equal(s.getEmbed('color'), '7289DA');
+        assert.equal(s.getBehavior('showCommitUrls'), true);
+    });
+
+    it('settings.jsonc uses the new key names', () => {
+        const raw = fs.readFileSync(path.join(__dirname, '..', 'settings.jsonc'), 'utf8');
+        for (const legacy of ['embedColor', 'footerText', 'fileListPrefix', 'embedDescriptionSeparator', 'authorUsePusher', 'useAuthorUrl', 'showAuthorIcon']) {
+            assert.doesNotMatch(raw, new RegExp(legacy));
+        }
+    });
+
+    it('warns on ineffective setting combinations', () => {
+        const log = require('../utils/logger');
+        const original = log.warn;
+        const warnings = [];
+        log.warn = (msg) => warnings.push(msg);
+        try {
+            new WebhookSettings(testSettings({ showFilesRecap: true }));
+            assert.ok(warnings.some(m => m.includes('showFilesRecap') && m.includes('oneCommitPerMessage')));
+
+            warnings.length = 0;
+            new WebhookSettings(testSettings({ oneCommitPerMessage: false, showCommitMessageBody: true }));
+            assert.ok(warnings.some(m => m.includes('showCommitMessageBody')));
+
+            warnings.length = 0;
+            new WebhookSettings(testSettings());
+            assert.equal(warnings.length, 0);
+        } finally {
+            log.warn = original;
+        }
+    });
+
+    it('single mode honors the custom separator', async () => {
+        const db = new DatabaseManager(':memory:');
+        db.createWebhook('uuid1', 'chan1', 'demo', 'github', null);
+        const sent = [];
+        const handler = new WebhookHandler(db, fakeClient(sent), testSettings({ showCommitMessageBody: true }, { separator: '\n---\n' }));
+        const payload = fakePayload();
+        payload.commits[0].message = 'summary\nbody line';
+        await handler.handlePush('uuid1', payload, 'github');
+        assert.match(sent[0].embeds[0].data.description, /summary\n---\nbody line/);
+        db.close();
     });
 });
 

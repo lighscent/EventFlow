@@ -2,31 +2,34 @@
   "behavior": {
     "oneCommitPerMessage": true,
     "showFileNames": false,
+    // Needs oneCommitPerMessage:false and showFileNames:true
+    "showFilesRecap": false,
     "showCommitUrls": true,
     "showCommitMessageBody": false,
     "showCompareLink": true,
-    "showFilesRecap": true,
     "onlyDefaultBranch": false
   },
   "limits": {
+    // Needs oneCommitPerMessage:false
     "maxCommitsPerEmbed": 5,
     "maxEmbedsPerPush": 20,
+    // Needs showFileNames:true
     "maxFilesPerCommit": 10
   },
   "display": {
     "showRepoNameInTitle": true,
     "showBranchInTitle": true,
     "showCommitCountInTitle": true,
-    "embedDescriptionSeparator": "\n\n",
-    "fileListPrefix": "Files:"
+    "separator": "\n\n",
+    "filePrefix": "Files:"
   },
   "embed": {
-    "embedColor": "7289DA",
-    "footerText": "EventFlow by xl1te"
+    "color": "7289DA",
+    "footer": "EventFlow by xl1te"
   },
   "author": {
-    "showAuthorIcon": true,
-    "useAuthorUrl": true,
-    "authorUsePusher": true
+    "showIcon": true,
+    "useUrl": true,
+    "usePusher": true
   }
 }

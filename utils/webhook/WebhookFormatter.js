@@ -14,8 +14,8 @@ class WebhookFormatter {
         this.showRepoNameInTitle = this.settings.getDisplay('showRepoNameInTitle') !== false;
         this.showBranchInTitle = this.settings.getDisplay('showBranchInTitle') !== false;
         this.showCommitCountInTitle = this.settings.getDisplay('showCommitCountInTitle') !== false;
-        this.filePrefix = this.settings.getDisplay('fileListPrefix') || 'Files:';
-        this.descriptionSeparator = this.settings.getDisplay('embedDescriptionSeparator') || '\n\n';
+        this.filePrefix = this.settings.getDisplay('filePrefix');
+        this.descriptionSeparator = this.settings.getDisplay('separator');
     }
 
     buildTitle(commitCount, commitId) {
@@ -70,12 +70,12 @@ class WebhookFormatter {
         if (this.showCommitBody) {
             const body = commit.message.split('\n').slice(1).join('\n').trim();
             if (body) {
-                description += `\n\n${body}`;
+                description += `${this.descriptionSeparator}${body}`;
             }
         }
 
         if (this.showFileNames) {
-            description += `\n\n${this.formatFileList(commit, maxFiles)}`;
+            description += `${this.descriptionSeparator}${this.formatFileList(commit, maxFiles)}`;
         }
 
         return description;

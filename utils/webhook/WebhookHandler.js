@@ -138,14 +138,11 @@ class WebhookHandler {
                 shown = 1;
             }
 
-            // Files recap goes in its own embed: raw ESC chars in ```ansi blocks
-            // break Discord's link parsing for the whole description.
             let recap = '';
             if (isLast && recapMode) {
                 recap = formatter.buildFilesRecap(visible, maxFiles);
             }
 
-            // Only the very last embed of the push keeps footer + timestamp.
             const embedOpts = e === 0 ? {} : { hideTitle: true, hideAuthor: true };
             if (!isLast || recap) embedOpts.hideFooter = true;
 

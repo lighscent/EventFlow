@@ -6,7 +6,7 @@ const DatabaseManager = require('./db/database');
 const WebhookHandler = require('./utils/webhook/index');
 const { createDiscordBot } = require('./utils/discord');
 const { checkForUpdates, startDailyVersionCheck } = require('./utils/version-check');
-const settings = require('./settings.json');
+const settings = require('./utils/settings');
 
 const app = express();
 const port = process.env.PORT || 3000;

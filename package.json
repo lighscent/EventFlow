@@ -15,6 +15,7 @@
     "discord.js": "^14.27.0",
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
+    "jsonc-parser": "^3.3.1",
     "logxpert": "^2.2.1",
     "node-cron": "^4.6.0",
     "sqlite3": "^6.0.1",

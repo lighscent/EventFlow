@@ -53,7 +53,7 @@ All commands require the `AUTHORIZED_ID` permissions defined in your `.env` file
 
 ## Configuration
 
-The bot's behavior can be customized using the `settings.json` file. This file allows you to control how GitHub/Forgejo events are displayed in Discord embeds.
+The bot's behavior can be customized using the `settings.jsonc` file (JSON with comments). This file allows you to control how GitHub/Forgejo events are displayed in Discord embeds.
 
 ### Settings Overview
 
@@ -63,6 +63,7 @@ The bot's behavior can be customized using the `settings.json` file. This file a
   - `showCommitUrls`: Include links to commits.
   - `showCommitMessageBody`: Show full commit messages.
   - `showCompareLink`: Include compare links for pushes.
+  - `showFilesRecap`: Replace per-commit file lists with one global recap (grouped mode + `showFileNames` only).
   - `onlyDefaultBranch`: Only process pushes to the default branch.
 
 - **limits**: Set limits to prevent spam.
@@ -74,17 +75,32 @@ The bot's behavior can be customized using the `settings.json` file. This file a
   - `showRepoNameInTitle`: Include repository name in embed title.
   - `showBranchInTitle`: Include branch name in title.
   - `showCommitCountInTitle`: Show commit count in title.
-  - `embedDescriptionSeparator`: Separator for descriptions.
-  - `fileListPrefix`: Prefix for file lists.
+  - `separator`: Separator between commits in grouped mode.
+  - `filePrefix`: Prefix for file lists (e.g. `Files:` renders as `**Files (N)**`).
 
 - **embed**: Embed styling.
-  - `embedColor`: Hex color for embeds (default: Discord blue).
-  - `footerText`: Text in embed footer.
+  - `color`: Hex color for embeds (default: Discord blue).
+  - `footer`: Text in embed footer.
 
 - **author**: Author display options.
-  - `showAuthorIcon`: Show author avatar.
-  - `useAuthorUrl`: Link to author's GitHub profile.
-  - `authorUsePusher`: Use pusher instead of author for commits.
+  - `showIcon`: Show author avatar.
+  - `useUrl`: Link to author's GitHub profile.
+  - `usePusher`: Use pusher instead of sender for the author.
+
+### Which settings work together
+
+`oneCommitPerMessage` switches between two modes. Settings marked `—` are ignored in that mode (startup warns you).
+
+| Setting | Single (`true`) | Grouped (`false`) | Needs |
+|---|---|---|---|
+| `showCompareLink` | — | ✅ | — |
+| `showFilesRecap` | — | ✅ | `showFileNames:true` |
+| `maxCommitsPerEmbed` | — | ✅ | — |
+| `maxEmbedsPerPush` | ✅ (cap) | ✅ | — |
+| `showCommitMessageBody` | ✅ | — (summary only) | — |
+| `separator` | ✅ | ✅ | — |
+| `showFileNames`, `maxFilesPerCommit`, `filePrefix` | ✅ | ✅ | `maxFilesPerCommit`/`filePrefix` need `showFileNames:true` |
+| `showCommitUrls`, `onlyDefaultBranch`, title flags, `color`, `footer`, `author.*` | ✅ | ✅ | — |
 
 ## GitHub Setup
 Once you've created a webhook via Discord using `/webhook create` (platform: **GitHub**), you'll receive an embed with a spoiler URL (`/github/<uuid>`).
