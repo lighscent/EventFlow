@@ -29,6 +29,9 @@ const handleWebhook = platform => async (req, res) => {
     if (event === 'push') {
         const result = await webhookHandler.handlePush(uuid, req.body, platform);
         res.sendStatus(result.status);
+    } else if (event === 'ping') {
+        const result = await webhookHandler.handlePing(uuid, req.body, platform);
+        res.sendStatus(result.status);
     } else {
         res.sendStatus(200);
     }

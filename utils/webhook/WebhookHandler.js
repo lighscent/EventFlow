@@ -106,6 +106,28 @@ class WebhookHandler {
         await channel.send({ embeds: [embed] });
         return { status: 200 };
     }
+
+    async handlePing(uuid, payload, platform = 'github') {
+        const row = this.db.getWebhook(uuid);
+        if (!row) {
+            return { status: 404, message: 'Webhook not found' };
+        }
+
+        const channel = this.client.channels.cache.get(row.channelId);
+        if (!channel) {
+            return { status: 200 };
+        }
+
+        const repoName = payload.repository?.full_name || 'unknown repo';
+        const embed = new WebhookEmbedBuilder(this.settings, payload, platform).build(
+            `Webhook connected: ${repoName}`,
+            payload.zen || 'Ping received — webhook is working.',
+            payload.repository?.html_url
+        );
+
+        await channel.send({ embeds: [embed] });
+        return { status: 200 };
+    }
 }
 
 module.exports = WebhookHandler;

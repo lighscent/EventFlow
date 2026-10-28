@@ -70,6 +70,21 @@ describe('webhook handler', () => {
         db.close();
     });
 
+    it('ping sends a confirmation embed and returns 200', async () => {
+        const db = new DatabaseManager(':memory:');
+        db.createWebhook('uuid1', 'chan1', 'demo', 'github', null);
+        const sent = [];
+        const handler = new WebhookHandler(db, fakeClient(sent), settings);
+        const result = await handler.handlePing('uuid1', {
+            zen: 'Keep it logically awesome.',
+            repository: { full_name: 'lighscent/test', html_url: 'https://github.com/lighscent/test' }
+        }, 'github');
+        assert.equal(result.status, 200);
+        assert.equal(sent.length, 1);
+        assert.match(sent[0].embeds[0].data.title, /lighscent\/test/);
+        db.close();
+    });
+
     it('signature check passes without secret', () => {
         const handler = new WebhookHandler({}, {}, settings);
         assert.equal(handler.verifySignature({ headers: {} }, 'github'), true);
