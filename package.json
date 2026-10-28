@@ -4,6 +4,10 @@
   "version": "1.1.1",
   "author": "xl1te <github.com/lighscent>",
   "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "node --test test/smoke.test.js"
+  },
   "license": "MIT",
   "dependencies": {
     "better-sqlite3": "^13.0.3",

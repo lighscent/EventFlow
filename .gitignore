@@ -4,3 +4,4 @@ logs/
 *.db
 *.zip
 yarn.lock
+test/demo-repo/
