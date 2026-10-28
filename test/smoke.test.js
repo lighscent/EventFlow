@@ -167,6 +167,9 @@ describe('webhook handler', () => {
         assert.match(sent[3].embeds[1].data.description, /\*\*Files \(34\)\*\*/);
         assert.equal(sent[3].embeds[1].data.title, undefined);
         assert.equal(sent[3].embeds[1].data.author, undefined);
+        assert.equal(sent[3].embeds[0].data.footer, undefined);
+        assert.ok(sent[3].embeds[1].data.footer);
+        assert.ok(sent[3].embeds[1].data.timestamp);
         db.close();
     });
 
@@ -221,6 +224,12 @@ describe('webhook handler', () => {
         assert.equal(sent[1].embeds[0].data.title, undefined);
         assert.equal(sent[1].embeds[0].data.author, undefined);
         assert.ok(sent[0].embeds[0].data.author);
+        for (const m of [sent[0], sent[1]]) {
+            assert.equal(m.embeds[0].data.footer, undefined);
+            assert.equal(m.embeds[0].data.timestamp, undefined);
+        }
+        assert.ok(sent[2].embeds[0].data.footer);
+        assert.ok(sent[2].embeds[0].data.timestamp);
         db.close();
     });
 

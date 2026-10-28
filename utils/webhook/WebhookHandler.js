@@ -145,12 +145,16 @@ class WebhookHandler {
                 recap = formatter.buildFilesRecap(visible, maxFiles);
             }
 
+            // Only the very last embed of the push keeps footer + timestamp.
+            const embedOpts = e === 0 ? {} : { hideTitle: true, hideAuthor: true };
+            if (!isLast || recap) embedOpts.hideFooter = true;
+
             const embed = embedBuilder.build(
                 formatter.buildTitle(commits.length),
                 description || 'No description',
                 compareUrl,
                 chunk[0]?.timestamp,
-                e === 0 ? {} : { hideTitle: true, hideAuthor: true }
+                embedOpts
             );
 
             const embeds = [embed];

@@ -9,9 +9,14 @@ class WebhookEmbedBuilder {
 
     build(title, description, url, timestamp, opts = {}) {
         const embed = new EmbedBuilder()
-            .setColor(this.settings.getEmbedColor())
-            .setFooter({ text: this.settings.getEmbed('footerText') })
-            .setTimestamp(timestamp ? new Date(timestamp) : new Date());
+            .setColor(this.settings.getEmbedColor());
+
+        // Footer and timestamp share Discord's bottom line: hidden together.
+        if (!opts.hideFooter) {
+            embed
+                .setFooter({ text: this.settings.getEmbed('footerText') })
+                .setTimestamp(timestamp ? new Date(timestamp) : new Date());
+        }
 
         if (title && !opts.hideTitle) {
             embed.setTitle(title);
