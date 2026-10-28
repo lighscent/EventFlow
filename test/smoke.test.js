@@ -16,6 +16,7 @@ const fakePayload = () => ({
     commits: [{
         id: `abc1234${'0'.repeat(33)}`,
         message: 'test: fake push',
+        author: { name: 'tester' },
         url: 'https://github.com/lighscent/test/commit/abc1234',
         timestamp: new Date().toISOString(),
         added: ['index.js'],
@@ -48,7 +49,8 @@ describe('webhook handler', () => {
         const result = await handler.handlePush('uuid1', fakePayload(), 'github');
         assert.equal(result.status, 200);
         assert.equal(sent.length, 1);
-        assert.match(sent[0].embeds[0].data.title, /lighscent\/test/);
+        assert.equal(sent[0].embeds[0].data.title, '[lighscent/test:main] 1 new commit');
+        assert.equal(sent[0].embeds[0].data.description, '`abc1234` tester - test: fake push');
         db.close();
     });
 
@@ -67,6 +69,19 @@ describe('webhook handler', () => {
         const payload = { ...fakePayload(), commits: [] };
         assert.equal((await handler.handlePush('uuid1', payload, 'github')).status, 200);
         assert.equal(sent.length, 0);
+        db.close();
+    });
+
+    it('grouped push matches Discord style', async () => {
+        const db = new DatabaseManager(':memory:');
+        db.createWebhook('uuid1', 'chan1', 'demo', 'github', null);
+        const sent = [];
+        const grouped = { ...settings, behavior: { ...settings.behavior, oneCommitPerMessage: false } };
+        const handler = new WebhookHandler(db, fakeClient(sent), grouped);
+        const result = await handler.handlePush('uuid1', fakePayload(), 'github');
+        assert.equal(result.status, 200);
+        assert.equal(sent[0].embeds[0].data.title, '[lighscent/test:main] 1 new commits');
+        assert.match(sent[0].embeds[0].data.description, /tester - test: fake push/);
         db.close();
     });
 

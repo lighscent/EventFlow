@@ -28,12 +28,17 @@ class WebhookFormatter {
 
         const prefix = parts.length ? `[${parts.join(':')}] ` : '';
         if (this.oneCommitPerMessage && commitId) {
-            return `${prefix}${commitId}`;
+            return `${prefix}1 new commit`;
         }
         if (this.showCommitCountInTitle) {
-            return `${prefix}${commitCount} new commit(s)`;
+            return `${prefix}${commitCount} new commits`;
         }
         return prefix.trim() || `${this.platform === 'forgejo' ? 'Forgejo' : 'GitHub'} push`;
+    }
+
+    commitAuthor(commit) {
+        return commit.author?.name || commit.author?.username
+            || this.payload.pusher?.name || this.payload.sender?.login || 'unknown';
     }
 
     formatFileList(commit, maxFiles) {
@@ -56,7 +61,8 @@ class WebhookFormatter {
 
     buildDescription(commit, maxFiles) {
         const summary = commit.message.split('\n')[0];
-        let description = summary;
+        const commitId = commit.id.substring(0, 7);
+        let description = `\`${commitId}\` ${this.commitAuthor(commit)} - ${summary}`;
 
         if (this.showCommitBody) {
             const body = commit.message.split('\n').slice(1).join('\n').trim();
@@ -75,9 +81,8 @@ class WebhookFormatter {
     buildSummaryLine(commit) {
         const summary = commit.message.split('\n')[0];
         const commitId = commit.id.substring(0, 7);
-        return this.showCommitUrls
-            ? `[\`${commitId}\`](${commit.url}) ${summary}`
-            : `\`${commitId}\` ${summary}`;
+        const sha = this.showCommitUrls ? `[\`${commitId}\`](${commit.url})` : `\`${commitId}\``;
+        return `${sha} ${this.commitAuthor(commit)} - ${summary}`;
     }
 }
 

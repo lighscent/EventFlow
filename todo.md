@@ -1,2 +1,4 @@
-améliorer les commandes
-support des events github
+# Todo
+
+- support des events github
+- auto refresh when settings saved
