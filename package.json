@@ -1,7 +1,7 @@
 {
   "name": "EventFlow",
   "description": "A lightweight, simple Discord bot to receive GitHub and Forgejo repository events via webhooks and post them in your Discord channels.",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": "xl1te <github.com/lighscent>",
   "main": "main.js",
   "scripts": {
