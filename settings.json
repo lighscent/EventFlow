@@ -5,6 +5,7 @@
     "showCommitUrls": true,
     "showCommitMessageBody": false,
     "showCompareLink": true,
+    "showFilesRecap": true,
     "onlyDefaultBranch": false
   },
   "limits": {
@@ -21,7 +22,7 @@
   },
   "embed": {
     "embedColor": "7289DA",
-    "footerText": "Open-Source Project | github.com/lighscent/EventFlow"
+    "footerText": "EventFlow by xl1te"
   },
   "author": {
     "showAuthorIcon": true,

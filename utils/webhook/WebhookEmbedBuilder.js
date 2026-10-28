@@ -7,12 +7,19 @@ class WebhookEmbedBuilder {
         this.platform = platform;
     }
 
-    build(title, description, url, timestamp) {
+    build(title, description, url, timestamp, opts = {}) {
         const embed = new EmbedBuilder()
-            .setTitle(title)
             .setColor(this.settings.getEmbedColor())
             .setFooter({ text: this.settings.getEmbed('footerText') })
             .setTimestamp(timestamp ? new Date(timestamp) : new Date());
+
+        if (title && !opts.hideTitle) {
+            embed.setTitle(title);
+        }
+
+        if (description && description.length > 4096) {
+            description = `${description.slice(0, 4093)}...`;
+        }
 
         if (url) {
             embed.setURL(url);
@@ -28,11 +35,13 @@ class WebhookEmbedBuilder {
             ? (this.payload.sender?.avatar_url || this.payload.pusher?.avatar_url)
             : undefined;
 
-        embed.setAuthor({
-            name: authorName || (this.platform === 'forgejo' ? 'Forgejo' : 'GitHub'),
-            iconURL: authorIcon,
-            url: authorUrl
-        });
+        if (!opts.hideAuthor) {
+            embed.setAuthor({
+                name: authorName || (this.platform === 'forgejo' ? 'Forgejo' : 'GitHub'),
+                iconURL: authorIcon,
+                url: authorUrl
+            });
+        }
 
         if (description) {
             embed.setDescription(description);

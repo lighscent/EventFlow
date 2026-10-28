@@ -17,6 +17,7 @@ class WebhookSettings {
                     showCommitUrls: true,
                     showCommitMessageBody: false,
                     showCompareLink: true,
+                    showFilesRecap: false,
                     onlyDefaultBranch: false
                 }[key];
             case 'limits':

@@ -92,18 +92,75 @@ class WebhookHandler {
             return { status: 200 };
         }
 
-        const description = commits.slice(0, commitLimit)
-            .map(commit => formatter.buildSummaryLine(commit))
-            .join(formatter.descriptionSeparator);
+        const DESCRIPTION_LIMIT = 4096;
+        const maxFiles = this.settings.getLimit('maxFilesPerCommit');
+        const recapMode = formatter.showFileNames && formatter.showFilesRecap;
+        const visible = commits.slice(0, commitLimit * embedLimit);
+        const sep = formatter.descriptionSeparator;
 
-        const embed = embedBuilder.build(
-            formatter.buildTitle(commits.length),
-            description || 'No description',
-            compareUrl,
-            commits[0]?.timestamp
-        );
+        let i = 0;
+        for (let e = 0; e < embedLimit && i < visible.length; e++) {
+            const chunk = visible.slice(i, i + commitLimit);
+            const sections = chunk.map(commit => {
+                const line = formatter.buildSummaryLine(commit);
+                return (!recapMode && formatter.showFileNames)
+                    ? `${line}\n${formatter.formatFileList(commit, maxFiles)}`
+                    : line;
+            });
 
-        await channel.send({ embeds: [embed] });
+            const isLast = i + chunk.length >= visible.length || e === embedLimit - 1;
+            let description = '';
+            let shown = 0;
+            let truncated = false;
+            for (const section of sections) {
+                const next = shown === 0 ? section : description + sep + section;
+                if (isLast) {
+                    const left = commits.length - (i + shown) - 1;
+                    const suffix = left > 0 ? `${sep}*…and ${left} more commits*` : '';
+                    if (next.length + suffix.length > DESCRIPTION_LIMIT) {
+                        description += `${shown === 0 ? '' : sep}*…and ${commits.length - (i + shown)} more commits*`;
+                        truncated = true;
+                        shown = sections.length;
+                        break;
+                    }
+                } else if (next.length > DESCRIPTION_LIMIT) {
+                    break;
+                }
+                description = next;
+                shown++;
+            }
+            if (isLast && !truncated) {
+                const undisplayed = commits.length - (i + shown);
+                if (undisplayed > 0) description += `${sep}*…and ${undisplayed} more commits*`;
+            }
+            if (!isLast && shown === 0) {
+                description = sections[0];
+                shown = 1;
+            }
+
+            // Files recap goes in its own embed: raw ESC chars in ```ansi blocks
+            // break Discord's link parsing for the whole description.
+            let recap = '';
+            if (isLast && recapMode) {
+                recap = formatter.buildFilesRecap(visible, maxFiles);
+            }
+
+            const embed = embedBuilder.build(
+                formatter.buildTitle(commits.length),
+                description || 'No description',
+                compareUrl,
+                chunk[0]?.timestamp,
+                e === 0 ? {} : { hideTitle: true, hideAuthor: true }
+            );
+
+            const embeds = [embed];
+            if (recap) {
+                embeds.push(embedBuilder.build('', recap, undefined, chunk[0]?.timestamp, { hideAuthor: true }));
+            }
+
+            await channel.send({ embeds });
+            i += Math.max(shown, 1);
+        }
         return { status: 200 };
     }
 
